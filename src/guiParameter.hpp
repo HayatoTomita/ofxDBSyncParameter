@@ -21,21 +21,14 @@ public:
     key = _key;
     conn = _conn;
 
-    resp = (redisReply *)redisCommand(conn, "HGET %s size", key.c_str());
-    if (resp->str == NULL) {
+    resp = (redisReply *)redisCommand(conn, "HGETALL %s", key.c_str());
+    if (resp->element == NULL) {
       std::cout << "init value" << std::endl;
       dbsync();
-      resp = (redisReply *)redisCommand(conn, "HGET %s size", key.c_str());
+      resp = (redisReply *)redisCommand(conn, "HGETALL %s", key.c_str());
     }
-    size_t data_size = std::atoi(resp->str);
-
-    resp = (redisReply *)redisCommand(conn, "HGET %s value", key.c_str());
-    if (resp->str == NULL) {
-      std::cout << "init value" << std::endl;
-      dbsync();
-      resp = (redisReply *)redisCommand(conn, "HGET %s size", key.c_str());
-    }
-    char *pdata = resp->str;
+    size_t data_size = std::atoi(resp->element[1]->str);
+    char *pdata = resp->element[3]->str;
 
     msgpack::object_handle hd = msgpack::unpack(pdata, data_size);
     const msgpack::object &obj = hd.get();
