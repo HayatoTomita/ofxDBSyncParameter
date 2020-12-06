@@ -42,10 +42,9 @@ public:
   bool dbsync() {
     msgpack::sbuffer buffer;
     msgpack::pack(buffer, value);
-    resp = (redisReply *)redisCommand(conn, "HSET %s size %d", key.c_str(),
-                                      buffer.size());
-    resp = (redisReply *)redisCommand(conn, "HSET %s value %s", key.c_str(),
-                                      buffer.data());
+    resp =
+        (redisReply *)redisCommand(conn, "HMSET %s size %d value %s",
+                                   key.c_str(), buffer.size(), buffer.data());
     if (NULL == resp) {
       std::cout << "failed to set value." << std::endl;
       return false;
