@@ -3,6 +3,29 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     gui.setup();
+    redisContext *conn = NULL;
+    redisReply *resp   = NULL;
+    conn = redisConnect( "127.0.0.1" , 6379);
+    if( ( NULL != conn ) && conn->err ){
+      printf("error : %s\n" , conn->errstr );
+      redisFree( conn );
+        return;
+    }else if( NULL == conn ){
+        return;
+    }
+    resp = (redisReply *) redisCommand( conn, "GET sample");
+    if( NULL == resp ){
+        redisFree( conn );
+        return;
+    }
+    if( REDIS_REPLY_ERROR == resp->type ){
+        redisFree( conn );
+        freeReplyObject( resp );
+        return;
+    }
+    printf( "sample : %s\n" , resp->str );
+    freeReplyObject( resp );
+    redisFree( conn );
 }
 
 //--------------------------------------------------------------

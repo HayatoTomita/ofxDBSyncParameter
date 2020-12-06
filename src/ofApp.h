@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxImGui.h"
+#include "hiredis.h"
 
 class ofApp : public ofBaseApp{
 
@@ -24,4 +25,6 @@ class ofApp : public ofBaseApp{
     
     ofxImGui::Gui gui;
     float radius = 0.0;
+    redisContext *conn = NULL;
+    redisReply *resp   = NULL;
 };
