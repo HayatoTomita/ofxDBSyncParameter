@@ -26,6 +26,8 @@ void ofApp::setup(){
     printf( "sample : %s\n" , resp->str );
     freeReplyObject( resp );
     redisFree( conn );
+    
+    radius.setValue(0.0);
 }
 
 //--------------------------------------------------------------
@@ -35,9 +37,9 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofDrawCircle(ofGetWidth() / 2, ofGetHeight() / 2, radius);
+    ofDrawCircle(ofGetWidth() / 2, ofGetHeight() / 2, radius.getValue());
     gui.begin();
-    ImGui::SliderFloat("Float", &radius, 0.0f, 100.0f);
+    ImGui::SliderFloat("Float", radius.getValuePtr(), 0.0f, 100.0f);
     gui.end();
 }
 

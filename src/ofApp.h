@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxImGui.h"
 #include "hiredis.h"
+#include "guiParameter.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -24,7 +25,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     ofxImGui::Gui gui;
-    float radius = 0.0;
+    guiParameter radius;
     redisContext *conn = NULL;
     redisReply *resp   = NULL;
 };
