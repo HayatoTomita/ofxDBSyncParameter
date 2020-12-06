@@ -1,5 +1,5 @@
 #include "ofApp.h"
-#include "msgpack.hpp"
+
 //--------------------------------------------------------------
 void ofApp::setup() {
   gui.setup();
@@ -13,7 +13,8 @@ void ofApp::setup() {
   } else if (NULL == conn) {
     return;
   }
-  radius = guiParameter(conn, "radius");
+  radius = guiParameter<float>(conn, "radius");
+  flag = guiParameter<bool>(conn, "flag");
 }
 
 //--------------------------------------------------------------
@@ -21,10 +22,18 @@ void ofApp::update() {}
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+  if (flag.getValue()) {
+    ofSetColor(255, 0, 0);
+  } else {
+    ofSetColor(255, 255, 255);
+  }
   ofDrawCircle(ofGetWidth() / 2, ofGetHeight() / 2, radius.getValue());
   gui.begin();
   if (ImGui::SliderFloat("Float", radius.getValuePtr(), 0.0f, 100.0f)) {
     radius.dbsync();
+  }
+  if (ImGui::Checkbox("Bool", flag.getValuePtr())) {
+    flag.dbsync();
   }
   gui.end();
 }

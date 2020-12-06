@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string>
 
-class guiParameter {
+template <class T> class guiParameter {
 public:
   guiParameter() {}
   guiParameter(redisContext *_conn, std::string _key) {
@@ -24,6 +24,7 @@ public:
     resp = (redisReply *)redisCommand(conn, "HGETALL %s", key.c_str());
     if (resp->element == NULL) {
       std::cout << "init value" << std::endl;
+      value = T(0);
       dbsync();
       resp = (redisReply *)redisCommand(conn, "HGETALL %s", key.c_str());
     }
@@ -36,9 +37,9 @@ public:
   }
 
   ~guiParameter() {}
-  void setValue(float _value) { value = _value; }
-  float getValue() { return value; }
-  float *getValuePtr() { return &value; }
+  void setValue(T _value) { value = _value; }
+  T getValue() { return value; }
+  T *getValuePtr() { return &value; }
   bool dbsync() {
     msgpack::sbuffer buffer;
     msgpack::pack(buffer, value);
@@ -56,7 +57,7 @@ public:
 
 private:
   std::string key;
-  float value = 0;
+  T value;
   redisContext *conn = NULL;
   redisReply *resp = NULL;
 };

@@ -26,7 +26,8 @@ public:
   void gotMessage(ofMessage msg);
 
   ofxImGui::Gui gui;
-  guiParameter radius;
+  guiParameter<float> radius;
+  guiParameter<bool> flag;
   redisContext *conn = NULL;
   redisReply *resp = NULL;
 };
