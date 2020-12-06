@@ -9,6 +9,7 @@
 #define guiParameter_hpp
 
 #include "hiredis.h"
+#include "msgpack.hpp"
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -19,25 +20,39 @@ public:
   guiParameter(redisContext *_conn, std::string _key) {
     key = _key;
     conn = _conn;
-    resp = (redisReply *)redisCommand(conn, "GET %s", key.c_str());
-    if (NULL == resp) {
-      return false;
-    }
-    if (REDIS_REPLY_ERROR == resp->type) {
-      return false;
-    }
+
+    resp = (redisReply *)redisCommand(conn, "HGET %s size", key.c_str());
     if (resp->str == NULL) {
       std::cout << "init value" << std::endl;
       dbsync();
+      resp = (redisReply *)redisCommand(conn, "HGET %s size", key.c_str());
     }
-    value = std::atof(resp->str);
+    size_t data_size = std::atoi(resp->str);
+
+    resp = (redisReply *)redisCommand(conn, "HGET %s value", key.c_str());
+    if (resp->str == NULL) {
+      std::cout << "init value" << std::endl;
+      dbsync();
+      resp = (redisReply *)redisCommand(conn, "HGET %s size", key.c_str());
+    }
+    char *pdata = resp->str;
+
+    msgpack::object_handle hd = msgpack::unpack(pdata, data_size);
+    const msgpack::object &obj = hd.get();
+    obj.convert(value);
   }
+
   ~guiParameter() {}
   void setValue(float _value) { value = _value; }
   float getValue() { return value; }
   float *getValuePtr() { return &value; }
   bool dbsync() {
-    resp = (redisReply *)redisCommand(conn, "SET %s %f", key.c_str(), value);
+    msgpack::sbuffer buffer;
+    msgpack::pack(buffer, value);
+    resp = (redisReply *)redisCommand(conn, "HSET %s size %d", key.c_str(),
+                                      buffer.size());
+    resp = (redisReply *)redisCommand(conn, "HSET %s value %s", key.c_str(),
+                                      buffer.data());
     if (NULL == resp) {
       std::cout << "failed to set value." << std::endl;
       return false;
