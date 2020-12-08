@@ -28,6 +28,9 @@ public:
   ofxImGui::Gui gui;
   guiParameter<float> radius;
   guiParameter<bool> flag;
+  guiParameter<int> intvalue;
   redisContext *conn = NULL;
   redisReply *resp = NULL;
+
+  float start;
 };

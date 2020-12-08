@@ -15,6 +15,23 @@ void ofApp::setup() {
   }
   radius = guiParameter<float>(conn, "radius");
   flag = guiParameter<bool>(conn, "flag");
+  int loopnum = 100000;
+  int tmp = 0;
+  float start = ofGetElapsedTimef();
+  for (int i = 0; i < loopnum; i++) {
+    tmp = i;
+  }
+  float end = ofGetElapsedTimef();
+  ofLogNotice("normal int") << float(end - start);
+
+  intvalue = guiParameter<int>(conn, "intvalue");
+  start = ofGetElapsedTimef();
+  for (int i = 0; i < loopnum; i++) {
+    intvalue.setValue(i);
+    intvalue.dbsync();
+  }
+  end = ofGetElapsedTimef();
+  ofLogNotice("guiParameter int") << float(end - start);
 }
 
 //--------------------------------------------------------------
